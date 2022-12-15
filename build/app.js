@@ -20,7 +20,6 @@ const mailerRoutes_1 = __importDefault(require("./routes/mailerRoutes"));
 class App {
     constructor() {
         this.path = require('path');
-        //const fileUpload = require ("express-fileupload");
         this.app = (0, express_1.default)();
         this.config();
         this.middleware();
@@ -29,13 +28,13 @@ class App {
     config() {
         this.app.set('port', process.env.PORTSERV || 3000);
         this.app.use((0, cors_1.default)());
+        this.app.use(express_1.default.static(this.path.resolve(__dirname, '../archivos')));
     }
     middleware() {
         this.app.use((0, morgan_1.default)('dev'));
         this.app.use(express_1.default.json());
         this.app.use(express_1.default.urlencoded({ extended: false }));
         this.app.use((0, express_fileupload_1.default)());
-        this.app.use(express_1.default.static(this.path.resolve(__dirname, '../archivos')));
     }
     routes() {
         this.app.use('/', indexroutes_1.default);

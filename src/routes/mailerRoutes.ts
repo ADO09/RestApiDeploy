@@ -14,7 +14,8 @@ class MailerRoutes{
     this.router.get('/', mailerController.MAIL1)
                 .post('/mssge',mailerController.mssgFisioCliente)
                  .post('/citAcptFis',mailerController.mssgcitAcptFis) 
-                 .post('/citAcptClit',mailerController.mssgcitAcptClit)  
+                 .post('/citAcptClit',mailerController.mssgcitAcptClit)
+                  .post('/baneoCuenta',mailerController.mssBaneoCuenta)  
    }
 }
 

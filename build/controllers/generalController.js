@@ -21,7 +21,7 @@ class GeneralController {
                 const data = req.body;
                 console.log(data);
                 const conn = yield (0, database_1.connect)();
-                const general = yield conn.query("SELECT id_cliente,usuario,contrasena,TipoUsuario,correo,nombre,fotografia,TemaPagina,favoritos FROM cliente WHERE usuario = ? and contrasena = ? ", [data.usuario, data.contrasena]);
+                const general = yield conn.query("SELECT id_cliente,usuario,contrasena,TipoUsuario,correo,nombre,fotografia,TemaPagina,favoritos,estatusCuenta FROM cliente WHERE usuario = ? and contrasena = ? ", [data.usuario, data.contrasena]);
                 console.log(general[0].length);
                 console.log(general[0][0]);
                 if (general[0].length > 0) {
@@ -29,7 +29,7 @@ class GeneralController {
                     return res.json(response);
                 }
                 else {
-                    const general2 = yield conn.query("SELECT id_fisio,usuario,contrasena,TipoUsuario,correo,nombre,fotografia,TemaPagina FROM fisioterapeuta WHERE usuario = ? and contrasena = ?", [data.usuario, data.contrasena]);
+                    const general2 = yield conn.query("SELECT id_fisio,usuario,contrasena,TipoUsuario,correo,nombre,fotografia,TemaPagina,estatusCuenta FROM fisioterapeuta WHERE usuario = ? and contrasena = ?", [data.usuario, data.contrasena]);
                     const response = { error: false, msg: "AQUI ESTA EL DATO FISIO", data: general2[0][0] };
                     console.log(general2[0].length);
                     console.log(general2[0][0]);
@@ -52,9 +52,22 @@ class GeneralController {
     }
     forgotPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const correoDes = req.params.correo;
-            console.log(correoDes);
             try {
+                const correoDes = req.params.correo;
+                console.log(correoDes);
+                const conn = yield (0, database_1.connect)();
+                var cadena = "";
+                const general = yield conn.query("select contrasena,TipoUsuario,usuario from cliente where correo = ?  UNION select contrasena,TipoUsuario,usuario from fisioterapeuta where correo = ? ", [correoDes, correoDes]);
+                if (general[0].length == 0) {
+                    const response = { error: true, msg: "No se encontro el email" };
+                    return res.json(response);
+                }
+                // console.log(general[0][0]);
+                general[0].forEach((element) => {
+                    //console.log( element.contrasena);
+                    cadena += "usuario:" + element.usuario + " Contrasena:" + element.contrasena + " Tipo de usuario ligado a esta cuenta:" + element.TipoUsuario + "\n";
+                });
+                console.log(cadena);
                 yield mailer_1.transporter.sendMail({
                     from: "FISIOLINES S.A. 👻 <fisioliness@gmail.com>",
                     to: correoDes,
@@ -508,7 +521,7 @@ class GeneralController {
                            <tr>
                              <td class="email-masthead">
                                <a href="https://example.com" class="f-fallback email-masthead_name">
-                               [Product Name]
+                               
                              </a>
                              </td>
                            </tr>
@@ -520,8 +533,8 @@ class GeneralController {
                                  <tr>
                                    <td class="content-cell">
                                      <div class="f-fallback">
-                                       <h1>Hi {{name}},</h1>
-                                       <p>You recently requested to reset your password for your [Product Name] account. Use the button below to reset it. <strong>This password reset is only valid for the next 24 hours.</strong></p>
+                                       <h1>Hi ${correoDes},</h1>
+                                       <p>You recently requested to reset your password for your account.  <strong>This password reset is only valid for the next 24 hours.</strong></p>
                                        <!-- Action -->
                                        <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
@@ -531,22 +544,24 @@ class GeneralController {
                                              <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
                                                <tr>
                                                  <td align="center">
-                                                   <a href="{{action_url}}" class="f-fallback button button--green" target="_blank">Reset your password</a>
+                                                   Inormacion de cuentas 
+                                                   <hr>
+                                                   ${cadena}
                                                  </td>
                                                </tr>
                                              </table>
                                            </td>
                                          </tr>
                                        </table>
-                                       <p>For security, this request was received from a {{operating_system}} device using {{browser_name}}. If you did not request a password reset, please ignore this email or <a href="{{support_url}}">contact support</a> if you have questions.</p>
+                                       <p>For security, this request was received from a fisiolines device using server. If you did not request a password reset, please ignore this email or <a href="">fisioliness@gmail.com</a> if you have questions.</p>
                                        <p>Thanks,
-                                         <br>The [Product Name] team</p>
+                                         <br>The fisiolines team</p>
                                        <!-- Sub copy -->
                                        <table class="body-sub" role="presentation">
                                          <tr>
                                            <td>
                                              <p class="f-fallback sub">If you’re having trouble with the button above, copy and paste the URL below into your web browser.</p>
-                                             <p class="f-fallback sub">{{action_url}}</p>
+                                             
                                            </td>
                                          </tr>
                                        </table>
@@ -588,6 +603,24 @@ class GeneralController {
                 console.log(error);
                 const response = { error: true, msg: "ERROR" + error };
                 return res.json(response);
+            }
+        });
+    }
+    dataGetUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const usuario = req.params.usuario;
+            console.log(usuario);
+            try {
+                const conn = yield (0, database_1.connect)();
+                const general = yield conn.query(`select nombre,apellido1,id_fisio as id_user,usuario,TipoUsuario,fotografia from fisioterapeuta where usuario in('${usuario}') union select nombre,apellido1,id_cliente as id_user,usuario,TipoUsuario,fotografia  from cliente where usuario in('${usuario}')`);
+                console.log(general[0][0]);
+                const response = { error: false, msg: "Se envio el Mnesaje", data: general[0][0] };
+                res.json(response);
+            }
+            catch (error) {
+                console.log(error);
+                const response = { error: true, msg: "Se envio el Mnesaje", data: null };
+                res.status(500).json(response);
             }
         });
     }

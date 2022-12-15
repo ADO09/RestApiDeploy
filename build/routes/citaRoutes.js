@@ -16,6 +16,7 @@ class CitaRoutes {
             .get('/listCitaFisio/:id', citaController_1.default.getCitasFisios)
             .get('/countCitas/:id', citaController_1.default.getCitasCount)
             .get('/listCitaClient/:id', citaController_1.default.getCitasClients)
+            .get('/listCitaFisioHBalance/:id', citaController_1.default.getCitasFisiosHBalance)
             .get('/listCitaFisioH/:id', citaController_1.default.getCitasFisiosH)
             .get('/listCitaClientH/:id', citaController_1.default.getCitasClientsH)
             .post('/', citaController_1.default.addcita)

@@ -46,7 +46,7 @@ public async fisiosFavs(req: Request, res: Response): Promise<any> {
     
     try {
         
-         const clienteF = await conn.query("SELECT * FROM fisioterapeuta where id_fisio in ("+favoritos+") and TipoUsuario not in ('admin')" );
+         const clienteF = await conn.query("SELECT * FROM fisioterapeuta where id_fisio in ("+favoritos+") and TipoUsuario not in ('admin') and estatusCuenta ='1'" );
        // console.log(clienteF[0])
         const response = {error:false,msg:"Lista de fisios favoritos",data:clienteF[0]};
          return res.json (response);
@@ -57,6 +57,7 @@ public async fisiosFavs(req: Request, res: Response): Promise<any> {
     }
 
 }
+
 
 public async fisiosnotFavs(req: Request, res: Response): Promise<any> {
     const conn = await connect();
@@ -75,7 +76,7 @@ public async fisiosnotFavs(req: Request, res: Response): Promise<any> {
     
     try {
         
-         const clienteF = await conn.query("SELECT * FROM fisioterapeuta where id_fisio not in ("+favoritos+") and TipoUsuario not in ('admin')" );
+         const clienteF = await conn.query("SELECT * FROM fisioterapeuta where id_fisio not in ("+favoritos+") and TipoUsuario not in ('admin') and estatusCuenta ='1'" );
        // console.log(clienteF[0])
         const response = {error:false,msg:"Lista de fisios no favoritos",data:clienteF[0]};
          return res.json (response);
@@ -87,12 +88,26 @@ public async fisiosnotFavs(req: Request, res: Response): Promise<any> {
 
 }
 
+
+public async listCompl(req: Request, res: Response): Promise<any> {
+    const conn = await connect();
+    try {
+        const clienteF = await conn.query("SELECT * FROM fisioterapeuta where TipoUsuario not in ('admin')");
+        // console.log(clienteF[0])
+        const response = {error:false,msg:"Lista de fisios",data:clienteF[0]};
+        return res.json (response);
+    } catch (error) {
+        const response = {error:true,msg:"error: "+ error,data:null};
+        console.log(error);
+        return res.status(500).json(response);
+    }
+}
  
     //SELECT
     public async list(req: Request, res: Response): Promise<any> {
         const conn = await connect();
         try {
-            const clienteF = await conn.query("SELECT * FROM fisioterapeuta where TipoUsuario not in ('admin')");
+            const clienteF = await conn.query("SELECT * FROM fisioterapeuta where TipoUsuario not in ('admin') and estatusCuenta ='1'");
             // console.log(clienteF[0])
             const response = {error:false,msg:"Lista de fisios",data:clienteF[0]};
             return res.json (response);
@@ -152,7 +167,7 @@ public async fisiosnotFavs(req: Request, res: Response): Promise<any> {
         const http = require("http");
         const path = require("path");
         console.log(req.body)
-
+        console.log('askjdoasjdojasd');
 
 
         try {
@@ -554,6 +569,91 @@ public async fisiosnotFavs(req: Request, res: Response): Promise<any> {
              res.status(500).json(response);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    public async getoneComments(req: Request, res: Response): Promise<any> {
+        try {
+            const id = req.params.id;
+            console.log(id);
+            const conn = await connect();
+            const clienteF = await conn.query(
+                "select c.*,f.nombre , f.fotografia  from comments c join fisioterapeuta f on c.id_fisioCom = f.id_fisio   where c.id_fisio = ? UNION select c.*,p.nombre , p.fotografia  from comments c join cliente p on c.id_clienteCom = p.id_cliente   where c.id_fisio = ?",
+                 [id,id]
+            );
+            
+
+            console.log(clienteF[0])
+            const response = {error:false,msg:"Comentarios:",data:clienteF[0]};
+            return res.json(response);
+        } catch (error) {
+            console.log(error);
+            res.status(500);
+            res.send(error);
+            const response = {error:true,msg:"Error: "+error,data:null};
+            return res.status(500).json(response);
+        }
+    }
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    
+    public async addnewComments(req: Request, res: Response): Promise<any> {
+        try {
+            const fisioInf =  req.body;
+            
+            console.log(req.body);
+            
+            const conn = await connect();
+            const clienteF = await conn.query(
+               "INSERT INTO comments SET ?",
+               [fisioInf]
+            );
+            
+
+            console.log(clienteF[0])
+            const response = {error:false,msg:"Agregado con exito:",data:clienteF[0]};
+            return res.json(response);
+        } catch (error) {
+            console.log(error);
+            res.status(500);
+            res.send(error);
+            const response = {error:true,msg:"Error: "+error,data:null};
+            return res.status(500).json(response);
+        }
+    }
+
 }
 
 const clientefController = new ClientesFController();

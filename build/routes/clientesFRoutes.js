@@ -12,8 +12,12 @@ class ClientesFRoutes {
     }
     config() {
         this.router.get('/', clientesFController_1.default.list)
+            .get('/completos', clientesFController_1.default.listCompl)
             .get('/:id', clientesFController_1.default.getoneClienteF)
             .get('/puntuacion/:id', clientesFController_1.default.getonePuntuacion)
+            .get('/comments/:id', clientesFController_1.default.getoneComments)
+            .post('/commentsADD', clientesFController_1.default.addnewComments)
+            // .delete('/commentsDEL/:id', clientesFControllers.getoneComments)
             .post('/', clientesFController_1.default.addClienteF)
             .post('/noFavoritos', clientesFController_1.default.fisiosnotFavs)
             .post('/Favoritos', clientesFController_1.default.fisiosFavs)

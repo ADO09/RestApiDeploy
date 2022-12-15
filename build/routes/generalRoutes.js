@@ -12,7 +12,8 @@ class GeneralRoutes {
     }
     config() {
         this.router.post('/LogIn', generalController_1.default.inicioSesion)
-            .get('/forgotPassword/:correo', generalController_1.default.forgotPassword);
+            .get('/forgotPassword/:correo', generalController_1.default.forgotPassword)
+            .get('/DataSendMessage/:usuario', generalController_1.default.dataGetUser);
     }
 }
 const generalRoutes = new GeneralRoutes();

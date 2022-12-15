@@ -19,8 +19,7 @@ export class App {
    
 
     constructor(){  
-       
-        //const fileUpload = require ("express-fileupload");
+      
         this.app= express();
         this.config();
         this.middleware();
@@ -34,7 +33,7 @@ export class App {
         this.app.set('port',process.env.PORTSERV || 3000);
        
         this.app.use(cors());
-    
+        this.app.use(express.static(this.path.resolve(__dirname, '../archivos')));
     }
 
     middleware():void{
@@ -42,7 +41,7 @@ export class App {
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended: false}));
         this.app.use(fileUpload());
-        this.app.use(express.static(this.path.resolve(__dirname, '../archivos')));
+       
         
     }
 

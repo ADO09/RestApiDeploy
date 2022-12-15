@@ -32,7 +32,7 @@ class Expediente_medicoController {
                 const id = req.params.id;
                 console.log(id);
                 const conn = yield (0, database_1.connect)();
-                const expediente_medico = yield conn.query("select c.*,p.*, f.nombre,f.apellido1,f.correo,f.telefono,f.id_fisio from fisiolines.cita c join fisiolines.plan_rehabilitacion p on c.id_plan = p.id_plan join fisioterapeuta f on f.id_fisio = c.id_fisio where c.id_cliente = ?;", [id]);
+                const expediente_medico = yield conn.query("select c.*,p.*, f.nombre,f.apellido1,f.correo,f.telefono,f.id_fisio from fisiolines.cita c join fisiolines.plan_rehabilitacion p on c.id_plan = p.id_plan join fisioterapeuta f on f.id_fisio = c.id_fisio where c.id_cliente = ? and c.estatus in(1,2,5);", [id]);
                 const response = { error: false, msg: "Cuenta actualizado", data: expediente_medico[0] };
                 return res.json(response);
             }

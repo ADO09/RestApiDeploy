@@ -12,7 +12,8 @@ class GeneralRoutes {
 
    config(): void {
       this.router.post('/LogIn', generalController.inicioSesion)
-                  .get('/forgotPassword/:correo', generalController.forgotPassword);
+                  .get('/forgotPassword/:correo', generalController.forgotPassword)
+                  .get('/DataSendMessage/:usuario',generalController.dataGetUser)
      
    }
 }

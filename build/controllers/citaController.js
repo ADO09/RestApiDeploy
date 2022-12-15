@@ -31,7 +31,26 @@ class CitaController {
                 const id = req.params.id;
                 console.log(id);
                 const conn = yield (0, database_1.connect)();
-                const cita = yield conn.query("select c.*, p.nombre, p.apellido1, p.apellido2, p.curp,p.correo from cita c join  cliente p on c.id_cliente = p.id_cliente  where id_fisio = ? and estatus = '1'", [id]);
+                const cita = yield conn.query("select c.*, p.nombre, p.apellido1, p.apellido2, p.curp,p.correo, p.estatusCuenta,p.usuario,p.id_cliente from cita c join  cliente p on c.id_cliente = p.id_cliente  where id_fisio = ? and estatus = '1' and p.estatusCuenta= '1'", [id]);
+                const response = { error: false, msg: "CITAS DEL FISIO", data: cita[0] };
+                return res.json(response);
+            }
+            catch (error) {
+                console.log(error);
+                res.status(500);
+                res.send(error);
+                const response = { error: true, msg: "ERROR SERVIDOR", data: null };
+                return res.status(500).json(response);
+            }
+        });
+    }
+    getCitasFisiosHBalance(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                console.log(id);
+                const conn = yield (0, database_1.connect)();
+                const cita = yield conn.query("select c.*, p.nombre, p.apellido1, p.apellido2, p.curp, p.correo, p.estatusCuenta,p.usuario,p.id_cliente from cita c join  cliente p on c.id_cliente = p.id_cliente  where id_fisio = ? and estatus in ('1','2','5')  and p.estatusCuenta= '1'  ", [id]);
                 const response = { error: false, msg: "CITAS DEL FISIO", data: cita[0] };
                 return res.json(response);
             }
@@ -50,7 +69,7 @@ class CitaController {
                 const id = req.params.id;
                 console.log(id);
                 const conn = yield (0, database_1.connect)();
-                const cita = yield conn.query("select c.*, p.nombre, p.apellido1, p.apellido2, p.curp, p.correo from cita c join  cliente p on c.id_cliente = p.id_cliente  where id_fisio = ? and estatus in ('1','2','3')  ", [id]);
+                const cita = yield conn.query("select c.*, p.nombre, p.apellido1, p.apellido2, p.curp, p.correo, p.estatusCuenta,p.usuario,p.id_cliente from cita c join  cliente p on c.id_cliente = p.id_cliente  where id_fisio = ? and estatus in ('1','2','3')  and p.estatusCuenta= '1'  ", [id]);
                 const response = { error: false, msg: "CITAS DEL FISIO", data: cita[0] };
                 return res.json(response);
             }
@@ -69,7 +88,7 @@ class CitaController {
                 const id = req.params.id;
                 console.log(id);
                 const conn = yield (0, database_1.connect)();
-                const cita = yield conn.query("select c.*, f.nombre, f.apellido1, f.apellido2, f.RFC, f.correo from cita c join  fisioterapeuta f on c.id_fisio = f.id_fisio  where id_cliente = ? and estatus = '1'", [id]);
+                const cita = yield conn.query("select c.*, f.nombre, f.apellido1, f.apellido2, f.RFC, f.correo,f.estatusCuenta,f.usuario,f.id_fisio from cita c join  fisioterapeuta f on c.id_fisio = f.id_fisio  where id_cliente = ? and estatus = '1' and f.estatusCuenta = '1'", [id]);
                 const response = { error: false, msg: "CITAS DEL FISIO", data: cita[0] };
                 return res.json(response);
             }
@@ -88,7 +107,7 @@ class CitaController {
                 const id = req.params.id;
                 console.log(id);
                 const conn = yield (0, database_1.connect)();
-                const cita = yield conn.query("select c.*, f.nombre, f.apellido1, f.apellido2, f.RFC, f.correo from cita c join  fisioterapeuta f on c.id_fisio = f.id_fisio  where id_cliente = ? and estatus in ('1','2','3','4') ", [id]);
+                const cita = yield conn.query("select c.*, f.nombre, f.apellido1, f.apellido2, f.RFC, f.correo,f.estatusCuenta,f.usuario,f.id_fisio from cita c join  fisioterapeuta f on c.id_fisio = f.id_fisio  where id_cliente = ? and estatus in ('1','2','3','4')  and f.estatusCuenta = '1' ", [id]);
                 const response = { error: false, msg: "CITAS DEL FISIO", data: cita[0] };
                 return res.json(response);
             }

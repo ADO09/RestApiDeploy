@@ -46,7 +46,7 @@ class ClientesFController {
             console.log("estos son los favoritos" + favoritos);
             console.log(("SELECT * FROM fisioterapeuta where id_fisio not in (" + favoritos + ")"));
             try {
-                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where id_fisio in (" + favoritos + ") and TipoUsuario not in ('admin')");
+                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where id_fisio in (" + favoritos + ") and TipoUsuario not in ('admin') and estatusCuenta ='1'");
                 // console.log(clienteF[0])
                 const response = { error: false, msg: "Lista de fisios favoritos", data: clienteF[0] };
                 return res.json(response);
@@ -74,9 +74,25 @@ class ClientesFController {
             console.log("estos son los favoritos" + favoritos);
             console.log(("SELECT * FROM fisioterapeuta where id_fisio not in (" + favoritos + ")"));
             try {
-                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where id_fisio not in (" + favoritos + ") and TipoUsuario not in ('admin')");
+                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where id_fisio not in (" + favoritos + ") and TipoUsuario not in ('admin') and estatusCuenta ='1'");
                 // console.log(clienteF[0])
                 const response = { error: false, msg: "Lista de fisios no favoritos", data: clienteF[0] };
+                return res.json(response);
+            }
+            catch (error) {
+                const response = { error: true, msg: "error: " + error, data: null };
+                console.log(error);
+                return res.status(500).json(response);
+            }
+        });
+    }
+    listCompl(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const conn = yield (0, database_1.connect)();
+            try {
+                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where TipoUsuario not in ('admin')");
+                // console.log(clienteF[0])
+                const response = { error: false, msg: "Lista de fisios", data: clienteF[0] };
                 return res.json(response);
             }
             catch (error) {
@@ -91,7 +107,7 @@ class ClientesFController {
         return __awaiter(this, void 0, void 0, function* () {
             const conn = yield (0, database_1.connect)();
             try {
-                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where TipoUsuario not in ('admin')");
+                const clienteF = yield conn.query("SELECT * FROM fisioterapeuta where TipoUsuario not in ('admin') and estatusCuenta ='1'");
                 // console.log(clienteF[0])
                 const response = { error: false, msg: "Lista de fisios", data: clienteF[0] };
                 return res.json(response);
@@ -151,6 +167,7 @@ class ClientesFController {
             const http = require("http");
             const path = require("path");
             console.log(req.body);
+            console.log('askjdoasjdojasd');
             try {
                 const fisioinf = req.body;
                 const conn = yield (0, database_1.connect)();
@@ -440,6 +457,46 @@ class ClientesFController {
                 res.send(error);
                 const response = { error: true, msg: error, data: null };
                 res.status(500).json(response);
+            }
+        });
+    }
+    getoneComments(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                console.log(id);
+                const conn = yield (0, database_1.connect)();
+                const clienteF = yield conn.query("select c.*,f.nombre , f.fotografia  from comments c join fisioterapeuta f on c.id_fisioCom = f.id_fisio   where c.id_fisio = ? UNION select c.*,p.nombre , p.fotografia  from comments c join cliente p on c.id_clienteCom = p.id_cliente   where c.id_fisio = ?", [id, id]);
+                console.log(clienteF[0]);
+                const response = { error: false, msg: "Comentarios:", data: clienteF[0] };
+                return res.json(response);
+            }
+            catch (error) {
+                console.log(error);
+                res.status(500);
+                res.send(error);
+                const response = { error: true, msg: "Error: " + error, data: null };
+                return res.status(500).json(response);
+            }
+        });
+    }
+    addnewComments(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const fisioInf = req.body;
+                console.log(req.body);
+                const conn = yield (0, database_1.connect)();
+                const clienteF = yield conn.query("INSERT INTO comments SET ?", [fisioInf]);
+                console.log(clienteF[0]);
+                const response = { error: false, msg: "Agregado con exito:", data: clienteF[0] };
+                return res.json(response);
+            }
+            catch (error) {
+                console.log(error);
+                res.status(500);
+                res.send(error);
+                const response = { error: true, msg: "Error: " + error, data: null };
+                return res.status(500).json(response);
             }
         });
     }
